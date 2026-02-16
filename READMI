@@ -1,0 +1,18 @@
+# CLITaskManager
+
+A professional task and project management CLI tool built with C# and .NET 8.
+
+## Overview
+CLITaskManager is a command-line application that helps developers manage tasks and projects directly from the terminal, featuring PostgreSQL database integration and following industry best practices.
+
+## Technologies
+- .NET 8
+- C#
+- PostgreSQL
+- Entity Framework Core
+
+## Status
+🚧 Under Development
+
+## Author
+Soufiane SALIKI
