@@ -5,8 +5,8 @@ public class Task : BaseEntity
 {
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
-    Status Status { get; set; } = Status.Todo;
-    Priority Priority { get; set; } = Priority.Medium;
+    public Status Status { get; set; } = Status.Todo;
+    public Priority Priority { get; set; } = Priority.Medium;
     public DateTime? Deadline { get; set; }
 
     // Foreign key
