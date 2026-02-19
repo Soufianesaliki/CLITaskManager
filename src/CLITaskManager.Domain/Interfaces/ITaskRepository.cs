@@ -1,7 +1,7 @@
 using CLITaskManager.Domain.Entities;
 using CLITaskManager.Domain.Enums;
 
-namespace CLITaskManager.Application.Interfaces;
+namespace CLITaskManager.Domain.Interfaces;
 
 public interface ITaskRepository
 {
