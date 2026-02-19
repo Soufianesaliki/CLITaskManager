@@ -2,7 +2,7 @@ using CLITaskManager.Domain.Enums;
 
 namespace CLITaskManager.Application.DTOs;
 
-public class CreateTaskDots
+public class CreateTaskDto
 {
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
