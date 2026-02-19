@@ -1,6 +1,6 @@
 using CLITaskManager.Domain.Entities;
 
-namespace CLITaskManager.Application.Interfaces;
+namespace CLITaskManager.Domain.Interfaces;
 
 public interface ITagRepository
 {
