@@ -9,6 +9,7 @@ using CLITaskManager.Infrastructure.Repositories;
 using CLITaskManager.Application.Services;
 using CLITaskManager.CLI.Commands.Projects;
 using CLITaskManager.CLI;
+using CLITaskManager.CLI.Commands.Tasks;
 
 // Build configuration
 var configuration = new ConfigurationBuilder()
@@ -73,6 +74,36 @@ app.Configure(config =>
         project.AddCommand<DeleteProjectCommand>("delete")
             .WithDescription("Delete a project")
             .WithExample(new[] { "project", "delete", "1" });
+    });
+    
+    config.AddBranch("task", task =>
+    {
+        task.SetDescription("Manage tasks");
+        
+        task.AddCommand<ListTasksCommand>("list")
+            .WithDescription("List tasks with optional filters")
+            .WithExample(new[] { "task", "list" })
+            .WithExample(new[] { "task", "list", "--project", "1" })
+            .WithExample(new[] { "task", "list", "--status", "Todo" })
+            .WithExample(new[] { "task", "list", "--overdue" });
+            
+        task.AddCommand<CreateTaskCommand>("create")
+            .WithDescription("Create a new task")
+            .WithExample(new[] { "task", "create", "Fix login bug", "--project", "1", "--priority", "High" })
+            .WithExample(new[] { "task", "create", "Design homepage", "--project", "1", "--deadline", "2026-03-01" });
+            
+        task.AddCommand<UpdateTaskCommand>("update")
+            .WithDescription("Update a task")
+            .WithExample(new[] { "task", "update", "1", "--status", "InProgress" })
+            .WithExample(new[] { "task", "update", "1", "--priority", "High", "--deadline", "2026-02-25" });
+            
+        task.AddCommand<CompleteTaskCommand>("complete")
+            .WithDescription("Mark a task as complete")
+            .WithExample(new[] { "task", "complete", "1" });
+            
+        task.AddCommand<DeleteTaskCommand>("delete")
+            .WithDescription("Delete a task")
+            .WithExample(new[] { "task", "delete", "1" });
     });
 });
 
