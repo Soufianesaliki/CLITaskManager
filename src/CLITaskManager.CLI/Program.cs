@@ -10,6 +10,7 @@ using CLITaskManager.Application.Services;
 using CLITaskManager.CLI.Commands.Projects;
 using CLITaskManager.CLI;
 using CLITaskManager.CLI.Commands.Tasks;
+using CLITaskManager.CLI.Commands.Tags;
 
 // Build configuration
 var configuration = new ConfigurationBuilder()
@@ -104,6 +105,24 @@ app.Configure(config =>
         task.AddCommand<DeleteTaskCommand>("delete")
             .WithDescription("Delete a task")
             .WithExample(new[] { "task", "delete", "1" });
+    });
+
+    // Tag commands (NEW)
+    config.AddBranch("tag", tag =>
+    {
+        tag.SetDescription("Manage tags");
+        
+        tag.AddCommand<ListTagsCommand>("list")
+            .WithDescription("List all tags");
+            
+        tag.AddCommand<CreateTagCommand>("create")
+            .WithDescription("Create a new tag")
+            .WithExample(new[] { "tag", "create", "urgent" })
+            .WithExample(new[] { "tag", "create", "bug" });
+            
+        tag.AddCommand<DeleteTagCommand>("delete")
+            .WithDescription("Delete a tag")
+            .WithExample(new[] { "tag", "delete", "1" });
     });
 });
 
