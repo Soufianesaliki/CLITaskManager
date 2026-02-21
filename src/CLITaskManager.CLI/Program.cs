@@ -2,11 +2,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Spectre.Console.Cli;
 using CLITaskManager.Infrastructure.Data;
 using CLITaskManager.Domain.Interfaces;
 using CLITaskManager.Infrastructure.Repositories;
 using CLITaskManager.Application.Services;
-using Spectre.Console;
+using CLITaskManager.CLI.Commands.Projects;
+using CLITaskManager.CLI;
 
 // Build configuration
 var configuration = new ConfigurationBuilder()
@@ -18,7 +20,7 @@ var configuration = new ConfigurationBuilder()
 // Setup Dependency Injection
 var services = new ServiceCollection();
 
-// Add Logging
+// Add logging
 services.AddLogging(builder =>
 {
     builder.AddConsole();
@@ -27,7 +29,7 @@ services.AddLogging(builder =>
 
 // Add DbContext
 var connectionString = configuration.GetConnectionString("DefaultConnection");
-services.AddDbContextFactory<AppDbContext>(options =>
+services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // Register Repositories
@@ -36,39 +38,42 @@ services.AddScoped<ITaskRepository, TaskRepository>();
 services.AddScoped<ITagRepository, TagRepository>();
 
 // Register Services
-services.AddScoped<ProjectRepository>();
-services.AddScoped<TaskRepository>();
-services.AddScoped<TagRepository>();
+services.AddScoped<ProjectService>();
+services.AddScoped<TaskService>();
+services.AddScoped<TagService>();
 
 // Build the service provider
 var serviceProvider = services.BuildServiceProvider();
 
-// Welcome message
-AnsiConsole.Write(
-    new FigletText("CLI Task Manager")
-        .Centered()
-        .Color(Color.Blue));
+// Create type registrar for Spectre.Console.Cli
+var registrar = new TypeRegistrar(services);
+var app = new CommandApp(registrar);
 
-AnsiConsole.MarkupLine("[grey]Version 1.0.0[/]");
-AnsiConsole.WriteLine();
-
-try
+app.Configure(config =>
 {
-    using var scope = serviceProvider.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    var canConnect = await dbContext.Database.CanConnectAsync();
-
-    if (canConnect)
+    config.SetApplicationName("task-manager");
+    
+    // Project commands
+    config.AddBranch("project", project =>
     {
-        AnsiConsole.MarkupLine("[green]✓[/] Connected to database successfully!");
-    }
-    else
-    {
-        AnsiConsole.MarkupLine("[red]✗[/] Failed to connect to database.");
-    }
-}
-catch (Exception ex)
-{
-    AnsiConsole.MarkupLine($"[red]Error:[/] {ex.Message}");
-}
+        project.SetDescription("Manage projects");
+        
+        project.AddCommand<ListProjectsCommand>("list")
+            .WithDescription("List all projects");
+            
+        project.AddCommand<CreateProjectCommand>("create")
+            .WithDescription("Create a new project")
+            .WithExample(new[] { "project", "create", "Website Redesign" })
+            .WithExample(new[] { "project", "create", "Mobile App", "--description", "iOS and Android app" });
+            
+        project.AddCommand<ViewProjectCommand>("view")
+            .WithDescription("View project details")
+            .WithExample(new[] { "project", "view", "1" });
+            
+        project.AddCommand<DeleteProjectCommand>("delete")
+            .WithDescription("Delete a project")
+            .WithExample(new[] { "project", "delete", "1" });
+    });
+});
+
+return await app.RunAsync(args);
